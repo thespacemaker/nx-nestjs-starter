@@ -8,8 +8,8 @@ export class CreateStoreBody
 	extends PickType(StoreModel, ['name'])
 	implements StoreCreateInput
 {
-	constructor(properties: StoreCreateInput) {
+	constructor(properties: Partial<StoreCreateInput> = {}) {
 		super();
-		this.name = properties.name;
+		this.name = properties.name || '';
 	}
 }

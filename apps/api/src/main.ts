@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { default as helmet } from 'helmet';
 import { default as cookieParser } from 'cookie-parser';
 import { performance } from 'perf_hooks';
-import { VersioningType } from '@nestjs/common';
+import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common';
 
 import {
 	ConfigService,
@@ -17,6 +17,7 @@ const now = performance.now();
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
+	const reflector = app.get(Reflector);
 
 	app.enableVersioning({
 		type: VersioningType.URI,
@@ -29,6 +30,7 @@ async function bootstrap() {
 	app.useLogger(logger);
 	app.use(helmet());
 	app.use(cookieParser());
+	app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 	app.useGlobalPipes(getValidationPipe(config));
 
 	app.setGlobalPrefix('api');

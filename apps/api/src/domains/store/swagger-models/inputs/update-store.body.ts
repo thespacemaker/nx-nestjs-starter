@@ -8,7 +8,7 @@ export class UpdateStoreBody
 	extends PartialType(PickType(StoreModel, ['name']))
 	implements StoreUpdateInput
 {
-	constructor(properties: StoreUpdateInput) {
+	constructor(properties: Partial<StoreUpdateInput> = {}) {
 		super();
 		this.name = properties.name;
 	}
