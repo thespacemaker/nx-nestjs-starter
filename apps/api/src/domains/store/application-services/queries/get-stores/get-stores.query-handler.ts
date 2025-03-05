@@ -13,6 +13,6 @@ export class GetStoresQueryHandler
 	constructor(private readonly storeRepository: AbstractStoreRepository) {}
 
 	public async execute({ payload }: GetStoresQuery): Promise<[IStore[], number]> {
-		return await this.storeRepository.getAll(payload);
+		return await this.storeRepository.getAll(payload.data);
 	}
 }

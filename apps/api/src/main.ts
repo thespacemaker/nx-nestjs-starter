@@ -8,10 +8,7 @@ import { VersioningType } from '@nestjs/common';
 import {
 	ConfigService,
 	getValidationPipe,
-	i18nMiddleware,
-	initExpressSession,
 	initSwaggerModule,
-	PrismaService,
 } from '@nestjs-starter/api/modules/core';
 
 import { AppModule } from './app/app.module';
@@ -28,14 +25,11 @@ async function bootstrap() {
 
 	const config = app.get(ConfigService);
 	const logger = app.get(Logger);
-	const prisma = app.get(PrismaService);
 
 	app.useLogger(logger);
 	app.use(helmet());
 	app.use(cookieParser());
 	app.useGlobalPipes(getValidationPipe(config));
-	app.use(i18nMiddleware);
-	app.use(initExpressSession(config, prisma));
 
 	app.setGlobalPrefix('api');
 
