@@ -1,191 +1,108 @@
-# NestJS @nrwl/nx starter kit
+# NX NestJS Starter Project
 
-Welcome to the nx nestjs starter-kit 👋 This template tries to shed light on our
-nx-conventions and make it easier to get started.
+This project is a starter template for building robust and scalable applications using
+NestJS, NX, and a CQRS architecture.
 
-### Features
+## Getting Started
 
-The nest portion of this repo has a few features to get you started more easily:
+1.  **Prerequisites:** Make sure you have Docker and `pnpm` installed on your system.
 
-- i18n translations
-- i18n translated errors
-- basic module structure
-- prisma implementation
-- a typesafe env config module
-- some super fast pino http logging
-- automatic request validation
-- custom nest lib generation plugin
-
-### Non-Features
-
-I've intentionally left out the authentication part, as there is a good tutorial on the
-nestjs website. Our authentication needs oftentimes differ a lot, as we are sometimes
-behind auth proxies and need to handle headers and other times we have to implement a
-custom full-blown auth solution.
-
-I just left in the `express-session` package as it might come in handy in more api
-projects just to keep track of different requesters. You can rip it out though. Make sure
-to also remove all excess tables from the prisma schema if you do so.
-
-## Starting instructions
-
-### Prerequisites
-
-- You'll need `docker` and `docker-compose` (or `docker compose`).
-- The node version is pinned to the current lts version of `node` which is 18 as the time
-  of writing. (I recommend using [n](https://github.com/tj/n) for node version management)
-- This repo uses `pnpm` as package manager, which has to be major version 8. Read up about
-  how to install it [here](https://pnpm.io/installation#using-corepack). The recommended
-  way is to use `corepack` which comes pre-installed with node.
-- Some basic understanding of [nx](https://nx.dev/) would be good to being able to better
-  grasp the whole concept - there are a lot of short introduction guides and videos to get
-  you started.
-
-### First time setup
-
-If you just seeded your project with this template you need to follow some basic setup
-steps. If somebody already set up the project you can skip this section.
-
-- you have to rename all instances of "@nestjs-starter" with your project name. There is a
-  convenience script in the root of the project which you can use
-  (`./setup_repo.sh -new "@your-new-project"`), otherwise you can just search-replace it
-  yourself.
-
-### Getting started
-
-- install your dependencies via `pnpm install` in the root of the repo
-- to get started you can simply copy the `.example.env` file to a fresh `.env` file
-  located in the root **AND** `./apps/api` folders. The root env is for docker-compose and
-  the api env is for the nestjs app.
-- make sure to execute `docker-compose up -d` (first start your Docker Desktop application
-  if you're on a Mac) in the root folder to spin up your database, if you have set up your
-  `.env` correctly compose should pick up your settings
-- execute the command `pnpm prisma:migrate:dev` to initialize the database and generate
-  the prisma client.
-
-If you have done all those steps you can start your application by executing
-`pnpm nx serve` or `pnpm nx serve api` which will start an auto hot reloading development
-server. You can also use the npm scripts via executing `pnpm start` or
-`pnpm run start:api`. If no project is specified nx will default to the api project.
-
-All the most important commands are located in the "scripts" section in `package.json`.
-
-## How to use the nx-cli
-
-One of the greatest features of nx is that it sees which libs/apps are affected by your
-changes and only applies actions to those affected libs/apps.
-
-If you want to see your affected libs/apps just type in the following command
+2.  **Start the Docker Environment:**
 
 ```bash
-pnpm nx affected:graph
+	docker-compose up -d
 ```
 
-If you paid close attention, all the lint and build commands work with the "affected" part
-to save you some time to not having to test/lint/build projects you didn't touch.
+This command will start the necessary services defined in the `docker-compose.yml` file
+(e.g., databases, message brokers).
 
-Nx has a few different schematics to generate different kinds of libraries/apps from react
-to next or even nestjs.
+3.  **Configure Environment Variables:**
 
-## Custom nestjs library generation
+    - Create a `.env` file in the root directory of the project. Populate it with the
+      necessary environment variables, using the example `.example.env` file in the root
+      as a template.
+    - Create a `.env` file in the `apps/api` directory. Populate it with the API-specific
+      environment variables, using the `.example.env` file in the `apps/api` directory as
+      a template.
 
-This project contains a custom nestjs library generation command which already adds our
-standard config without having to consider that yourself. It's invoked by executing the
-following command:
+      **Important:** Refer to the `.example.env` files for the specific environment
+      variables required for each environment.
+
+4.  **Start the Application:**
+
+        ```bash
+        pnpm start
+        ```
+
+        This command will start the NestJS API application.
+
+5.  **Access API Documentation:**
+
+        Once the application is running, you can access the automatically generated Swagger API documentation at:
+
+        ```
+        http://localhost:3000/api/docs
+        ```
+
+## Running Tests
+
+To execute the unit tests, use the following command:
 
 ```bash
-pnpm gen:lib:nest name-of-lib
+	pnpm test
 ```
 
-If you want to pass parameters, you have to use an extra double hyphen (thanks npm 🙄)
-like this:
+## Architecture: CQRS with a Facade
 
-```bash
-pnpm gen:lib:nest name-of-lib -- --directory=api --dry-run
-```
+This project employs a CQRS (Command Query Responsibility Segregation) architecture to
+promote separation of concerns, improve scalability, and enhance maintainability.
 
-- npm invokes the nx cli with our custom generator
-- `@nestjs-starter/workspace:nest-library` indicates that our custom schematic is used,
-  and we want to generate a nest-library.
-- "name-of-lib" is the name of the library we want to create
-- `--directory` lets us modify the directory where we want to generate our lib/app
-- you can also append `--dry-run` to test out your command without changing anything
+- Commands: Represent write operations (e.g., creating, updating, deleting data).
+- Queries: Represent read operations (e.g., retrieving data).
 
-If you happen to have generated a wrong lib you can always look at the `workspace.json`
-file in the root and just remove the lib you just generated via this command:
+To simplify the interaction with commands and queries, a CQRS Facade is implemented. This
+facade provides a single point of entry for dispatching commands and queries throughout
+the application.
 
-```bash
-pnpm rm:lib name-of-lib
-```
+## Benefits of CQRS and the Facade:
 
-You can also move libraries with the following command:
+- Clean Separation of Concerns: Read and write operations are clearly separated, leading
+  to more modular and testable code.
 
-```bash
-pnpm mv:lib -- --project name-of-lib --destination api/new-name-for-lib
-```
+- Flexibility: Allows for independent optimization of read and write models and data
+  stores.
 
-Don't forget the double `--` after the npm command though 🧐
+- Scalability: Facilitates scaling read and write operations independently, as needed.
 
-If you want to know more about all available commands, nx' website has
-[some great docs](https://nx.dev/using-nx/nx-cli) to get started
+- Reusability: The CQRS facade can be used in various contexts, including:
 
-If you generated a new library **WITHOUT** our custom plugin make sure to go to the
-lib/app root directory and add the respective tag to it in the `project.json`. You can use
-existing libs as starting point. In the root `.eslintrc.json` there are some rules which
-lib/app tags can import other tags or also cannot.
+  - Controllers (REST API)
 
-An example would be that the `scope:backend-app` can only import from `scope:backend-core`
-to prevent the generation of circular dependencies right out of the box.
+  - GraphQL Resolvers
 
-### Folder Architecture
+  - Message Queue Consumers (e.g., for asynchronous processing)
 
-This repo contains a starting template implementation of a nestjs app called `api`.
+## Microservices-Ready
 
-Basically in all `nx` repos apps should only be an empty shell that import all code from a
-library. The full folder structure can be seen below.
+The CQRS architecture makes this project well-suited for both monolithic and microservices
+deployments.
 
-This project aims to build a base general nx starter scaffolding for apps that use NestJS
-as API and maybe expand to some more apps in the future.
+- Monolith: The application can run as a single unit, with all components co-located.
 
-The most important module is the core module, as it bundles all important code into one
-"entry-point" module which is then imported by the `api` app. This repo works with eslint
-module boundaries which make sure, that the app can only import code from the core module
-library. Every piece of code that should be exposed to the app must be re-exported through
-the core module.
+- Microservices: The application can be easily decomposed into microservices, with
+  commands and queries potentially handled by separate services. For example:
 
-```
-nestjs-starter
-├── apps
-│   ├── api-app-name
-│   └── frontend-app-name
-└── libs
-    ├── api
-    │   ├── types                     (lib)
-    │   ├── app                       (lib)
-    │   │   ├── middlewares           (dir)
-    │   │   ├── filters               (dir)
-    │   │   └── decorators            (dir)
-    │   └── modules
-    │       ├── feature-1             (lib)
-    │       ├── feature-2             (lib)
-    │       └── feature-3             (lib)
-    ├── frontend
-    │   ├── util                      (lib)
-    │   ├── types                     (lib)
-    │   └── components                (lib)
-    ├── frontend-shared
-    │   ├── util                      (lib)
-    │   ├── types                     (lib)
-    │   └── components                (lib)
-    └── shared
-        ├── util                      (lib)
-        └── types                     (lib)
-```
+  - A dedicated "Write Service" handling all commands (create, update, delete).
 
-## Troubleshooting
+  - One or more "Read Services" optimized for handling specific queries.
 
-If you're using a graphical git user interface program, make sure your node/npm is in your
-`PATH` before this program is opened. This repo uses git hooks that are executed on
-`pre-commit` and `pre-push`. You could also use `--no-verify` but then you'll not be able
-to merge your code into the repo as the ci will prevent you from merging non-linted code
-that maybe has type errors.
+This separation of concerns allows for independent scaling and deployment of different
+parts of the application, significantly improving scalability and resilience.
+
+## P.S. Unused Modules
+
+**Post Scriptum**: Please note that this starter project may contain modules (such as the
+HealthModule and i18n related components) that are currently unused in the core
+functionality demonstrated. These modules are included as potential building blocks for
+future extensions and can be safely removed if they are not needed in your specific
+implementation.

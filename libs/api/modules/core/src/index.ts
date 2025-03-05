@@ -1,5 +1,7 @@
 export * from './core.module';
 export * from './init';
+export * from './models';
+export * from './types';
 
 // only expose specific services to the api app
 // the app can only import from core
