@@ -74,7 +74,7 @@ export class PrismaStoreRepository extends AbstractStoreRepository {
 				where: {
 					id: id,
 				},
-				data: data,
+				data: { ...data, updatedAt: new Date() },
 			});
 			return this.mapToDomain(store);
 		} catch (error) {
