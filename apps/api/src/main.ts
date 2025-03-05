@@ -10,8 +10,8 @@ import {
 	getValidationPipe,
 	i18nMiddleware,
 	initExpressSession,
-	PrismaService,
 	initSwaggerModule,
+	PrismaService,
 } from '@nestjs-starter/api/modules/core';
 
 import { AppModule } from './app/app.module';
@@ -48,4 +48,4 @@ async function bootstrap() {
 	logger.debug(`App took ${Math.round(performance.now() - now)}ms to start.`);
 }
 
-bootstrap();
+void bootstrap();
