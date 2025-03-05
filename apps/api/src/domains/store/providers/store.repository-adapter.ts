@@ -34,7 +34,7 @@ export class PrismaStoreRepository extends AbstractStoreRepository {
 		take = 30,
 		orderDirection = OrderDirection.asc,
 		orderBy,
-	}: IStoreQuery): Promise<IStore[]> {
+	}: IStoreQuery): Promise<[IStore[], number]> {
 		const where: Prisma.StoreWhereInput = {};
 
 		if (search) {
@@ -45,15 +45,20 @@ export class PrismaStoreRepository extends AbstractStoreRepository {
 			where.id = { in: ids };
 		}
 
-		const stores = await this.prisma.store.findMany({
-			where,
-			orderBy: orderBy && {
-				[orderBy]: orderDirection,
-			},
-			skip,
-			take,
-		});
-		return stores.map(this.mapToDomain);
+		const [stores, count] = await Promise.all([
+			this.prisma.store.findMany({
+				where,
+				orderBy: orderBy && {
+					[orderBy]: orderDirection,
+				},
+				skip,
+				take,
+			}),
+			this.prisma.store.count({
+				where,
+			}),
+		]);
+		return [stores.map(this.mapToDomain), count];
 	}
 
 	public async create(data: StoreCreateInput): Promise<IStore> {

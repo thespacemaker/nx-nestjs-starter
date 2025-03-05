@@ -1,14 +1,14 @@
 import type {
 	IStore,
+	IStoreQuery,
 	StoreCreateInput,
 	StoreUpdateInput,
-	IStoreQuery,
 } from '../interfaces';
 
 export abstract class AbstractStoreRepository {
 	public abstract getById(id: string): Promise<IStore | null>;
 
-	public abstract getAll(query: IStoreQuery): Promise<IStore[]>;
+	public abstract getAll(query: IStoreQuery): Promise<[IStore[], number]>;
 
 	public abstract create(data: StoreCreateInput): Promise<IStore>;
 
