@@ -1,16 +1,12 @@
 import { Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
-import {
-	getApiErrorResponse,
-	getInternalServerErrorResponse,
-	getStandardErrorResponse,
-	isApiException,
-} from '../util';
+import { isApiException } from '../util';
 
 import type { ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import type { I18nReq } from '@nestjs-starter/api/types';
 import type { Response } from 'express';
+import type { ICommonResponseInterface } from '@nestjs-starter/shared/types';
 
 @Catch()
 export class ExceptionLoggerFilter implements ExceptionFilter<unknown> {
@@ -28,16 +24,14 @@ export class ExceptionLoggerFilter implements ExceptionFilter<unknown> {
 				`[WARNING]: A plain non translated error was thrown.`,
 			);
 
-		const jsonRes = isApiException(e)
-			? getApiErrorResponse(e, req)
-			: getStandardErrorResponse(e, req);
+		const jsonRes: ICommonResponseInterface<null> = isApiException(e)
+			? this.getApiExceptionErrorResponse(e) // Use a new function
+			: this.getStandardErrorResponse(e, status);
 
 		this.pinoLogger.error(
 			{
 				jsonRes,
 				body: req.body,
-				// TODO: comment in once actors are implemented
-				//user: req.user,
 				params: req.params,
 				query: req.query,
 			},
@@ -51,8 +45,6 @@ export class ExceptionLoggerFilter implements ExceptionFilter<unknown> {
 		this.pinoLogger.error(
 			{
 				body: req.body,
-				// TODO: comment in once actors are implemented
-				//user: req.user,
 				params: req.params,
 				query: req.query,
 				headers: req.headers,
@@ -60,9 +52,41 @@ export class ExceptionLoggerFilter implements ExceptionFilter<unknown> {
 			e instanceof Error ? e.message : 'Internal error',
 		);
 
-		res
-			.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.json(getInternalServerErrorResponse(req, e));
+		const jsonRes: ICommonResponseInterface<null> = this.getInternalServerErrorResponse();
+
+		res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(jsonRes);
+	}
+
+	private getStandardErrorResponse(
+		e: HttpException,
+		statusCode: number,
+	): ICommonResponseInterface<null> {
+		const message = e.message || 'An unexpected error occurred.';
+
+		return {
+			status: statusCode,
+			message: message,
+			data: null,
+		};
+	}
+
+	private getInternalServerErrorResponse(): ICommonResponseInterface<null> {
+		return {
+			status: HttpStatus.INTERNAL_SERVER_ERROR,
+			message: 'Internal Server Error',
+			data: null,
+		};
+	}
+
+	private getApiExceptionErrorResponse(e: HttpException): ICommonResponseInterface<null> {
+		const status = e.getStatus();
+		const message = e.message || 'An unexpected error occurred.';
+
+		return {
+			status: status,
+			message: message,
+			data: null,
+		};
 	}
 
 	public catch(e: unknown, host: ArgumentsHost): void {

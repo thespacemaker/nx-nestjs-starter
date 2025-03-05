@@ -11,6 +11,7 @@ import {
 	StoreFacade,
 } from './application-services';
 import { storeFacadeFactory } from './factories';
+import { StoreMutationsController, StoreQueriesController } from './controllers';
 
 @Global()
 @Module({
@@ -30,7 +31,7 @@ import { storeFacadeFactory } from './factories';
 		...STORE_EVENTS_HANDLERS,
 		...STORE_QUERIES_HANDLERS,
 	],
-	controllers: [],
+	controllers: [StoreQueriesController, StoreMutationsController],
 	exports: [StoreFacade, AbstractStoreRepository],
 })
 export class StoreModule implements OnModuleInit {
