@@ -7,4 +7,9 @@ export type EnvironmentType = {
 
 	SWAGGER_USER: string;
 	SWAGGER_PW: string;
+
+	POSTGRES_USER: string;
+	POSTGRES_PASSWORD: string;
+	POSTGRES_DB: string;
+	DATABASE_URL: string;
 };

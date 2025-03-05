@@ -31,6 +31,20 @@
 				}
 			}
 		},
+		"serve-with-hello-world": {
+			"executor": "nx:run-commands",
+			"options": {
+				"commands": ["echo 'hello'", "nx run api:start", "echo 'World'"],
+				"parallel": false
+			}
+		},
+		"start": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "nx run api:serve",
+				"readyWhen": "Listening at"
+			}
+		},
 		"serve": {
 			"executor": "@nx/js:node",
 			"options": {
