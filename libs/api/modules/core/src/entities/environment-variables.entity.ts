@@ -27,4 +27,18 @@ export class EnvironmentVariables implements EnvironmentType {
 
 	@IsString()
 	SWAGGER_PW!: string;
+
+	// db
+
+	@IsString()
+	DATABASE_URL!: string;
+
+	@IsString()
+	POSTGRES_DB!: string;
+
+	@IsString()
+	POSTGRES_PASSWORD!: string;
+
+	@IsString()
+	POSTGRES_USER!: string;
 }
