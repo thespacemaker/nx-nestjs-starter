@@ -19,7 +19,11 @@
 							},
 							{
 								"sourceTag": "scope:backend",
-								"onlyDependOnLibsWithTags": ["scope:backend", "scope:shared"],
+								"onlyDependOnLibsWithTags": [
+									"scope:backend",
+									"scope:shared",
+									"scope:global"
+								],
 								"bannedExternalImports": ["*react*"]
 							},
 							{
@@ -29,7 +33,7 @@
 							},
 							{
 								"sourceTag": "scope:backend-app",
-								"onlyDependOnLibsWithTags": ["scope:backend-core"],
+								"onlyDependOnLibsWithTags": ["scope:backend-core", "scope:backend"],
 								"bannedExternalImports": ["*react*"]
 							}
 						]
